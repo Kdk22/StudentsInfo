@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+{% block title %}Student Details{% endblock %}
+{% block content %}
+    <div>
+    <a href=""> Add Items</a>
+    </div>
+    {% for student in all_students_data %}
+
+        <div class="card border-primary mb-3 mt-4" style="max-width: 85rem;">
+        <div class="card-header">{{ student.first_name }}</div>
+        <div class="card-group">
+            <div class="col-sm-4">
+
+        <div class="card ml-2 mt-4 mb-4">
+            <img class="card-img-top " src="{{ MEDIA_URL }}{{ student.photo.url }}" alt="Card image cap">
+            <div class="card-body">
+                <p class="card-text">Blaa</p>
+
+            </div>
+        </div>
+            </div>
+
+
+            <div class="col-sm-8">
+        <div class="card border-primary mb-3 mt-4 mr-2" >
+            <div class="card-body text-primary">
+                <div class="border border-succes mb-2">
+                <h5 class="card-title">Students Information</h5>
+                    </div>
+                <h6>First Name: {{ student.first_name }}</h6>
+                <h6>Last Name: {{ student.last_name }}</h6>
+                <h6>Address: {{ student.address }}</h6>
+            </div>
+        </div>
+                </div>
+        </div>
+        </div>
+
+
+
+
+    {% endfor %}
+{% endblock %}

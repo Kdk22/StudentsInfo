@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% block title %}Dashboard{% endblock %}
+{% block content %}
+<h1>Dashboard</h1>
+<div class="container" >
+    <h2 class="text-center" > Proceed to  View the Students Information. </h2>
+</div>
+<div class="form-group">
+   <label class="col-md-4 control-label" for="singlebutton"></label>
+   <div class="col-md-4 center-block">
+       <form method="GET" action="{% url 'studentdetails' %}">
+          <button  class="btn btn-primary center-block btn-lg">
+              Students Information
+           </button>
+       </form>
+   </div>
+</div>
+{% endblock %}

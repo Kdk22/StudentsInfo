@@ -1,3 +1,4 @@
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.shortcuts import render
 
 # Create your views here.
@@ -5,13 +6,15 @@ from django.shortcuts import render
 from django.http import HttpResponse
 from django.shortcuts import render
 from django.contrib.auth import authenticate, login
+from django.urls import reverse_lazy
 from django.views.generic import ListView, CreateView
 
-from StudentInfo.models import Student
-from .forms import LoginForm
+from StudentInfo.models import Student, Course
+from .forms import LoginForm, CourseForm
 from django.contrib.auth.decorators import login_required
 from django.core.mail import send_mail
 from django.contrib.auth.models import User
+from django.views.generic.edit import FormView
 
 
 def user_login(request):
@@ -92,5 +95,77 @@ class IndexView(ListView):
         return ctx
 
 
-class CreateItems(CreateView):
+# class CreateItems(CreateView):
+#     template_name = 'studentinfo/add_items.html'
+#
+#     def form_valid(self, form):
+#         if self.request.user.is_authenticated:
+#             obj = form.save(commit=False)
+#             obj.author = self.request.user
+#             obj.save()
+#             return super().form_valid(form)
+#
+#     model = Post
+#     fields = ['title', 'content', 'categories', 'icon', 'post_date']
+#     template_name = 'Blog/post_form.html'
+#     success_url = reverse_lazy('Blog:index')
+
+
+class CreateCourse(FormView, LoginRequiredMixin):
     template_name = 'studentinfo/add_items.html'
+    form_class = CourseForm
+    success_url = reverse_lazy('studentdetails')
+
+
+    def form_valid(self, form):
+
+        course = Course()
+        course.course_title = form.cleaned_data['course_title']
+        course.duration = form.cleaned_data['duration']
+        course.syllabus = self.request.FILES
+        course.credit_hours = form.cleaned_data['credit_hours']
+        print(course.duration)
+        print(course.course_title)
+        print(course.syllabus)
+        print(course.credit_hours)
+
+        course.save()
+        return super(CreateSection, self).form_valid(form)
+
+
+
+class CreateSection(FormView):
+    template_name = 'studentinfo/add_items.html'
+    form_class = SectionForm
+    success_url = reverse_lazy('studentdetails')
+
+    def form_valid(self, form):
+
+        return super(CreateSection, self).form_valid(form)
+
+
+class CreateStudent(FormView):
+    template_name = 'studentinfo/add_items.html'
+    form_class = StudentForm
+    success_url = reverse_lazy('studentdetails')
+
+    def form_valid(self, form):
+        return super(CreateSection, self).form_valid(form)
+
+
+class CreateTest(FormView):
+    template_name = 'studentinfo/add_items.html'
+    form_class = TestForm
+    success_url = reverse_lazy('studentdetails')
+
+    def form_valid(self, form):
+        return super(CreateSection, self).form_valid(form)
+
+
+class CreateClub(FormView):
+    template_name = 'studentinfo/add_items.html'
+    form_class = ClubForm
+    success_url = reverse_lazy('studentdetails')
+
+    def form_valid(self, form):
+        return super(CreateSection, self).form_valid(form)

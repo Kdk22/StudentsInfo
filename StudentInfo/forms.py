@@ -1,6 +1,8 @@
 from django import forms
 from django.contrib.auth.models import User
 
+from StudentInfo.models import Course
+
 
 class LoginForm(forms.Form):
     username = forms.CharField()
@@ -23,3 +25,17 @@ class UserRegistrationForm(forms.ModelForm):
         if cd['password'] != cd['password2']:
          raise forms.ValidationError('Passwords don\'t match.')
         return cd['password2']
+
+
+from django import forms
+
+class CourseForm(forms.Form):
+    course_title = forms.CharField()
+    duration = forms.CharField()
+    credit_hours = forms.IntegerField()
+    syllabus = forms.FileField()
+
+
+class SectionForm(forms.Form):
+    name = forms.CharField()
+    course = forms.ModelChoiceField(queryset=Course.objects.all())

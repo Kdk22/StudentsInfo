@@ -19,5 +19,10 @@ urlpatterns = [
                 path('sendmail', sendmail, name='sendmail'),
                 path('register/', views.register, name='register'),
                 path('studentdetails/', views.IndexView.as_view(), name='studentdetails'),
-                path('additems/', views.CreateItemsas_view(), name='add_items')
+                path('addcourse/', views.CreateCourse.as_view(), name='add_course'),
+                path('addsection/', views.CreateSection.as_view(), name='add_section'),
+                path('addstudents/', views.CreateStudent.as_view(), name='add_student'),
+                path('addtest/', views.CreateTest.as_view, name='add_test'),
+                path('addclubs/', views.CreateClub.as_view, name='add_club'),
+
 ]

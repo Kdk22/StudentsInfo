@@ -21,8 +21,9 @@ urlpatterns = [
                 path('studentdetails/', views.IndexView.as_view(), name='studentdetails'),
                 path('addcourse/', views.CreateCourse.as_view(), name='add_course'),
                 path('addsection/', views.CreateSection.as_view(), name='add_section'),
-                path('addstudents/', views.CreateStudent.as_view(), name='add_student'),
-                path('addtest/', views.CreateTest.as_view, name='add_test'),
-                path('addclubs/', views.CreateClub.as_view, name='add_club'),
+                path('addstudents/', views.CreateStudent.as_view(), name='add_students'),
+                path('addtest/', views.CreateTest.as_view(), name='add_test'),
+                path('addclubs/', views.CreateClub.as_view(), name='add_club'),
+                path('addstudenttest/', views.create, name='add_student_test'),
 
 ]

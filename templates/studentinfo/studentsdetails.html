@@ -1,21 +1,24 @@
 {% extends "base.html" %}
 {% block title %}Student Details{% endblock %}
 {% block content %}
-    <div class="row">
-    <div>
+    <div class="row ml-5 mt-3">
+    <div class="col-sm-2 ml-5 pl-5">
     <a href="{% url 'add_course' %}"> Add Course</a>
     </div>
-    <div>
+    <div class="col-sm-2 ml-2 pl-5">
         <a href="{% url 'add_section' %}">Add Section</a>
-    </div>
-    <div>
+    </div >
+    <div class="col-sm-2 ml-2 pl-5">
         <a href="{%  url 'add_students' %}">Add Students</a>
     </div>
-     <div>
-        <a href="{%  url 'add_students' %}">Add Test</a>
+     <div class="col-sm-2 ml-2 pl-5">
+        <a href="{%  url 'add_test' %}">Add Test</a>
     </div>
-     <div>
-        <a href="{%  url 'add_students' %}">Add Clubs</a>
+     <div class="col-sm-2 ml-2 pl-5">
+        <a href="{%  url 'add_club' %}">Add Clubs</a>
+    </div>
+     <div class="col-sm-2 ml-2 pl-5">
+        <a href="{%  url 'add_student_test' %}">Student Test</a>
     </div>
     </div>
     {% for student in all_students_data %}

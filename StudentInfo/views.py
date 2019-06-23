@@ -1,5 +1,7 @@
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.shortcuts import render
+from django.db import transaction, IntegrityError
+from django.forms import modelformset_factory
+from django.shortcuts import render, redirect
 
 # Create your views here.
 
@@ -9,8 +11,9 @@ from django.contrib.auth import authenticate, login
 from django.urls import reverse_lazy
 from django.views.generic import ListView, CreateView
 
-from StudentInfo.models import Student, Course
-from .forms import LoginForm, CourseForm
+from StudentInfo.models import Student, Course, Section, Test
+from .forms import LoginForm, CourseForm, ClubForm, TestForm, StudentForm, SectionForm, CourseComboForm, \
+    SectionComboForm
 from django.contrib.auth.decorators import login_required
 from django.core.mail import send_mail
 from django.contrib.auth.models import User
@@ -122,7 +125,7 @@ class CreateCourse(FormView, LoginRequiredMixin):
         course = Course()
         course.course_title = form.cleaned_data['course_title']
         course.duration = form.cleaned_data['duration']
-        course.syllabus = self.request.FILES
+        course.syllabus = self.request.FILES['syllabus']
         course.credit_hours = form.cleaned_data['credit_hours']
         print(course.duration)
         print(course.course_title)
@@ -130,7 +133,8 @@ class CreateCourse(FormView, LoginRequiredMixin):
         print(course.credit_hours)
 
         course.save()
-        return super(CreateSection, self).form_valid(form)
+        print("-----------------***-----------------")
+        return super().form_valid(form)
 
 
 
@@ -140,8 +144,13 @@ class CreateSection(FormView):
     success_url = reverse_lazy('studentdetails')
 
     def form_valid(self, form):
+        section = Section()
+        section.course = form.cleaned_data['course']
+        section.name = form.cleaned_data['name']
 
-        return super(CreateSection, self).form_valid(form)
+        section.save()
+
+        return super().form_valid(form)
 
 
 class CreateStudent(FormView):
@@ -150,7 +159,13 @@ class CreateStudent(FormView):
     success_url = reverse_lazy('studentdetails')
 
     def form_valid(self, form):
-        return super(CreateSection, self).form_valid(form)
+        print(form.__dict__)
+        # section = Student()
+        # section.course = form.cleaned_data['mobile']
+        # section.name = form.cleaned_data['']
+
+        form.save()
+        return super().form_valid(form)
 
 
 class CreateTest(FormView):
@@ -159,7 +174,8 @@ class CreateTest(FormView):
     success_url = reverse_lazy('studentdetails')
 
     def form_valid(self, form):
-        return super(CreateSection, self).form_valid(form)
+
+        return super().form_valid(form)
 
 
 class CreateClub(FormView):
@@ -168,4 +184,78 @@ class CreateClub(FormView):
     success_url = reverse_lazy('studentdetails')
 
     def form_valid(self, form):
-        return super(CreateSection, self).form_valid(form)
+        return super().form_valid(form)
+
+
+class CreaStudentTest(FormView):
+    template_name ='studentinfo/formset.html'
+    TestFormset = modelformset_factory(Section, form=SectionComboForm)
+    form = CourseComboForm
+    formset = TestFormset( queryset=Section.objects.none(), prefix='marks')
+
+    # def get_form_kwargs(self):
+    #     kwargs = super().get_form_kwargs()
+    #     kwargs["prefix"] = 'marks'
+    #     kwargs['initial'] = queryset=Section.objects.none()
+    #     print(kwargs)
+    #     return kwargs
+
+    # def post(self, request, *args, **kwargs):
+    #     """
+    #     Handle POST requests: instantiate a form instance with the passed
+    #     POST variables and then check if it's valid.
+    #     """
+    #
+    #     form_class = CourseComboForm(request.POST)
+    #     TestFormset = modelformset_factory(Section, form=SectionComboForm)
+    #     formset = TestFormset(request.POST, queryset=Section.objects.none())
+    #     print('**********************---------------------------------*************************')
+    #     print(formset)
+    #     return formset
+
+
+
+    def form_valid(self, form):
+        for sub_form in form:
+            print(sub_form)
+
+        return super().form_valid(form)
+
+
+def create(request):
+    context = {}
+    CourseFormset = modelformset_factory(Section, form=SectionComboForm)
+    form = CourseComboForm(request.POST or None)
+    formset = CourseFormset(request.POST or None, queryset=Section.objects.none(), prefix='marks')
+
+    if request.method == "POST":
+        print(form)
+        print(formset)
+        print('____________*************________________________')
+
+        if formset.is_valid():
+            print('_+_+_+_+_+______________++++++++++________________')
+            if form.is_valid():
+
+                print('-------------------------************--------------------')
+                try:
+                    with transaction.atomic():
+                        print('_______________________________*******************_________________')
+                        course = form.save(commit=False)
+                        course.syllabus = request.FILES['syllabus']
+                        print(course.syllabus)
+                        course.save()
+
+                        for section in formset:
+                            data = section.save(commit=False)
+                            data.course = course
+                            data.save()
+                except IntegrityError:
+                    print("Error Encountered")
+
+                return redirect('studentdetails')
+
+    context['formset'] = formset
+    context['form'] = form
+    return render(request, 'studentinfo/formset.html', context)
+

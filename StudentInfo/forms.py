@@ -1,7 +1,7 @@
 from django import forms
 from django.contrib.auth.models import User
 
-from StudentInfo.models import Course
+from StudentInfo.models import Course, Section, Test, Club, Student
 
 
 class LoginForm(forms.Form):
@@ -39,3 +39,57 @@ class CourseForm(forms.Form):
 class SectionForm(forms.Form):
     name = forms.CharField()
     course = forms.ModelChoiceField(queryset=Course.objects.all())
+
+
+class StudentForm(forms.ModelForm):
+    class Meta:
+        model = Student
+        fields = '__all__'
+
+
+class TestForm(forms.ModelForm):
+    class Meta:
+        model = Test
+        fields = '__all__'
+
+
+
+class ClubForm(forms.ModelForm):
+    class Meta:
+        model= Club
+        fields = '__all__'
+
+
+class CourseComboForm(forms.ModelForm):
+	class Meta:
+		model = Course
+
+		fields = [
+            'course_title',
+			'duration',
+			'credit_hours',
+			'syllabus',
+
+
+
+		]
+
+		labels = {
+            'course_title': 'Course Title',
+			'duration': 'Course Duration',
+			'credit_hours':'Credit Hours',
+			'syllabus':'Syllabus',
+		}
+
+
+class SectionComboForm(forms.ModelForm):
+	class Meta:
+		model = Section
+
+		fields = [
+			'name',
+		]
+
+		widgets = {
+			'name': forms.TextInput(attrs={'class': 'formset-field'}),
+}

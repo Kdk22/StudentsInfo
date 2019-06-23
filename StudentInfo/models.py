@@ -40,7 +40,7 @@ class Test(models.Model):
     name = models.CharField(max_length=30)
     question = models.CharField(max_length=50)
     answer = models.CharField(max_length=1000)
-    timer = models.DurationField()
+    time = models.DurationField()
 
     def __str__(self):
         return self.name

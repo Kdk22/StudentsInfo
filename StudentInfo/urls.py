@@ -1,3 +1,4 @@
+from django.conf.urls import url, include
 from django.urls import path
 
 from StudentInfo.views import sendmail
@@ -7,6 +8,7 @@ from django.contrib.auth import views as auth_views
 
 urlpatterns = [
 # post views
+
                 path('login/', auth_views.LoginView.as_view(), name='login'),
                 path('logout/', auth_views.LogoutView.as_view(), name='logout'),
                 path('', views.dashboard, name='dashboard'),
@@ -25,5 +27,14 @@ urlpatterns = [
                 path('addtest/', views.CreateTest.as_view(), name='add_test'),
                 path('addclubs/', views.CreateClub.as_view(), name='add_club'),
                 path('addstudenttest/', views.create, name='add_student_test'),
+                path('api/v2/course/', # urls list all and create new one
+                            views.get_post_course.as_view(),
+                                name='get_post_course'),
+                path('sectiondetails/', views.SectionIndexView, name='get_section_detail'),
+                path('testdetails/', views.TestIndexView, name='get_test_detail'),
+                path('coursedetails/', views.CourseIndexView, name='get_course_detail'),
+                path('clubdetails/', views.ClubIndexView, name='get_club_detail'),
+
+
 
 ]

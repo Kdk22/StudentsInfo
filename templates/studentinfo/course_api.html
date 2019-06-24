@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+{% load staticfiles %}
+{% load crispy_forms_tags %}
+{% block title %}Add Students Test{% endblock %}
+{% block content %}
+
+    <table>
+    <tr>
+    <th>
+        Course Title
+    </th>
+    <th>
+        Duration
+    </th>
+        <th>
+        Credit Hour
+    </th>
+             <th>
+        Syllabus
+    </th>
+    </tr>
+        {% for course in paginate_queryset.results %}
+    <tr>
+        <td>{{ course.course_title }}</td>
+    </tr>
+             <tr>
+        <td>{{ course.duration }}</td>
+    </tr>
+         <tr>
+        <td>{{ course.credit_hours }}</td>
+    </tr>
+                 <tr>
+        <td>{{ course.syllabus }}</td>
+    </tr>
+    {% endfor %}
+    </table>
+    <div>{{ course.results }}</div>
+ <script>
+    {
+        var settings = {
+            "async": true,
+            "crossDomain": true,
+            "url": "http://localhost:8000/studentinfo/api/v2/course/",
+            "method": "GET",
+            "headers": {
+                "Authorization": "#############################################",
+                "Cache-Control": "no-cache",
+            }
+        }
+
+        $.ajax(settings).done(function (response) {
+            $('body').append(response);
+        });
+    }
+    </script>
+
+{% endblock %}

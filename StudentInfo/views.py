@@ -10,15 +10,21 @@ from django.shortcuts import render
 from django.contrib.auth import authenticate, login
 from django.urls import reverse_lazy
 from django.views.generic import ListView, CreateView
+from rest_framework import status
+from rest_framework.generics import ListCreateAPIView
+from rest_framework.response import Response
 
-from StudentInfo.models import Student, Course, Section, Test
+from StudentInfo.models import Student, Course, Section, Test, Club
+from StudentInfo.pagination import CustomPagination
+from StudentInfo.permissions import IsAuthenticated
+from StudentInfo.serializers import CourseSerealizer
 from .forms import LoginForm, CourseForm, ClubForm, TestForm, StudentForm, SectionForm, CourseComboForm, \
     SectionComboForm
 from django.contrib.auth.decorators import login_required
 from django.core.mail import send_mail
 from django.contrib.auth.models import User
 from django.views.generic.edit import FormView
-
+from . import serializers
 
 def user_login(request):
 
@@ -121,6 +127,7 @@ class CreateCourse(FormView, LoginRequiredMixin):
 
 
     def form_valid(self, form):
+        print(form)
 
         course = Course()
         course.course_title = form.cleaned_data['course_title']
@@ -222,10 +229,11 @@ class CreaStudentTest(FormView):
         return super().form_valid(form)
 
 
+
 def create(request):
     context = {}
     CourseFormset = modelformset_factory(Section, form=SectionComboForm)
-    form = CourseComboForm(request.POST or None)
+    form = CourseComboForm(request.POST or None,  request.FILES)
     formset = CourseFormset(request.POST or None, queryset=Section.objects.none(), prefix='marks')
 
     if request.method == "POST":
@@ -259,3 +267,68 @@ def create(request):
     context['form'] = form
     return render(request, 'studentinfo/formset.html', context)
 
+
+
+class get_post_course(ListCreateAPIView):
+    serializer_class = CourseSerealizer
+    permission_classes = (IsAuthenticated,)
+    pagination_class = CustomPagination
+    template_name = 'course_api.html'
+
+    def get_queryset(self):
+        movies = Course.objects.all()
+        return movies
+
+    # Get all movies
+    def get(self, request):
+        course = self.get_queryset()
+        paginate_queryset = self.paginate_queryset(course)
+        serializer = self.serializer_class(paginate_queryset, many=True)
+        return self.get_paginated_response(serializer.data)
+
+    # Create a new movie
+    def post(self, request):
+        serializer = CourseSerealizer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class SectionIndexView(ListView):
+    template_name = 'studentinfo/section_details.html'
+    queryset = Section.objects.all()
+    context_object_name = 'all_students_data'
+
+    def get_context_data(self, *, object_list=None, **kwargs):
+        ctx = super().get_context_data(object_list=object_list, **kwargs)
+        return ctx
+
+
+class CourseIndexView(ListView):
+    template_name = 'studentinfo/course_details.html'
+    queryset = Course.objects.all()
+    context_object_name = 'all_students_data'
+
+    def get_context_data(self, *, object_list=None, **kwargs):
+        ctx = super().get_context_data(object_list=object_list, **kwargs)
+        return ctx
+
+class ClubIndexView(ListView):
+    template_name = 'studentinfo/club_details.html'
+    queryset = Club.objects.all()
+    context_object_name = 'all_students_data'
+
+    def get_context_data(self, *, object_list=None, **kwargs):
+        ctx = super().get_context_data(object_list=object_list, **kwargs)
+        return ctx
+
+
+class TestIndexView(ListView):
+    template_name = 'studentinfo/test_details.html'
+    queryset = Test.objects.all()
+    context_object_name = 'all_students_data'
+
+    def get_context_data(self, *, object_list=None, **kwargs):
+        ctx = super().get_context_data(object_list=object_list, **kwargs)
+        return ctx
